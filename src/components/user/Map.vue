@@ -1,11 +1,14 @@
 <template>
   <!-- <div id="map" ref="map"></div> -->
-  <GmapMap
-  :center="{lat: coordinates.lat, lng: coordinates.lng}"
-  :zoom="12"
-  style="width: 100vw; height: 100vh"
->
-</GmapMap>
+  <div>
+    <GmapMap
+      :center="{lat: coordinates.lat, lng: coordinates.lng}"
+      :zoom="12"
+      style="width: 100vw; height: 100vh"
+    >
+    </GmapMap>
+  </div>
+  
 </template>
 
 <script>
