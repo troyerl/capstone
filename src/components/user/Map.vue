@@ -19,7 +19,8 @@ export default {
     ]),
   },
   mounted() {
-    this.map = new window.google.maps.Map(this.$refs["map"], {
+    const self = this;
+    self.map = new window.google.maps.Map(self.$refs["map"], {
       center: {lat: 39.7684, lng: -86.1581},
       zoom: 12
     })  
@@ -32,8 +33,8 @@ export default {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         };
-        this.map.setCenter(pos);
-        this.$store.dispatch('setCoordinates', position.coords);
+        self.map.setCenter(pos);
+        self.$store.dispatch('setCoordinates', position.coords);
       },
       () => {
         console.log('err');
