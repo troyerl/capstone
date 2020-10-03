@@ -13,8 +13,6 @@
           <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
           <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
         </div>
-
-        <pre>{{ JSON.stringify(test, null, '\t') }}</pre>
       </div>
     </b-modal>
   </div>
@@ -28,17 +26,36 @@ export default {
   data() {
     return {
       file: null,
-      test: null
     }
   },
   methods: {
     uploadImage() {
       const self = this;
       if (self.file) {
-        EXIF.getData(self.file, function() {
-          self.test = self.file.exifdata;
+        EXIF.getData(self.file, async function() {
+          if (self.isEmpty(self.file.exifdata)) {
+            let coordinates = await self.$getLocation();
+            self.file.exifdata["GPSLatitude"] = self.convertDDToDMS(coordinates.lat);
+            self.file.exifdata["GPSLongitude"] = self.convertDDToDMS(coordinates.lng);
+          }
+           
+          self.$store.dispatch('addToImages', self.file);
+          self.$bvModal.hide('upload-photos-modal');
         })
       }
+    },
+    isEmpty(obj) {
+      return JSON.stringify(obj) === '{}';
+    },
+    convertDDToDMS(dec) {
+      let d = Math.floor(dec);
+      let m = Math.floor((dec - d) * 60);
+      let s = Number(Math.round(((dec - d - m/60) * 3600) + "e2") + "e-2");
+      return [
+        d,
+        m,
+        s
+      ];
     }
   }
 }

@@ -6,7 +6,14 @@
       :zoom="12"
       style="width: 100vw; height: 100vh"
     >
+      <div :key="index" v-for="(m, index) in images">
+        <GmapInfoWindow
+          :position="getPosition(m)"
+          :options="getContents(m)"
+        />
+      </div>
     </GmapMap>
+    
   </div>
   
 </template>
@@ -20,6 +27,7 @@ export default {
     ...mapState([
       // map this.count to store.state.count
       'coordinates',
+      'images'
     ]),
   },
   mounted() {
@@ -29,6 +37,28 @@ export default {
         this.$store.dispatch('setCoordinates', coordinates);
       });
   },
+  methods: {
+    getPosition(m) {
+      return {
+        lng: this.convertDMSToDD(m.exifdata.GPSLongitude),
+        lat: this.convertDMSToDD(m.exifdata.GPSLatitude)
+      }
+    },
+    convertDMSToDD(location) {
+      let degrees = location[0]; 
+      let minutes = location[1];
+      let seconds  = location[2];
+
+      let dd = degrees + (minutes/60) + (seconds/3600);
+      
+      return dd;
+    },
+    getContents(m) {
+      return {
+        content: `<img style="height: 50px; width: 50px;" src='${URL.createObjectURL(m)}'>`,
+      }
+    }
+  }
 }
 </script>
 

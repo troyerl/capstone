@@ -10,15 +10,22 @@ export default new Vuex.Store({
       lng: -86.1581,
       lat: 39.7684
     },
+    images: []
   },
   mutations: {
     updateCoordinates(state, payload) {
       state.coordinates = payload;
+    },
+    updateImages(state, payload) {
+      state.images.push(payload);
     }
   },
   actions: {
     setCoordinates(context, payload) {
       context.commit('updateCoordinates', payload);
+    },
+    addToImages(context, payload) {
+      context.commit('updateImages', payload);
     }
   },
   getters: {
