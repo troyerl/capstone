@@ -7,8 +7,8 @@ export default new Vuex.Store({
   state: {
     userInfo: null,
     coordinates: {
-      longitude: -86.1581,
-      latitude: 39.7684
+      lng: -86.1581,
+      lat: 39.7684
     },
   },
   mutations: {

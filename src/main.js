@@ -21,6 +21,9 @@ Vue.use(VueGoogleMaps, {
   }
 });
 
+import VueGeolocation from 'vue-browser-geolocation';
+Vue.use(VueGeolocation);
+
 new Vue({
   store,
   render: h => h(App),

@@ -13,6 +13,7 @@
     "core-js": "^3.6.5",
     "exif-js": "^2.3.0",
     "vue": "^2.6.12",
+    "vue-browser-geolocation": "^1.8.0",
     "vue2-google-maps": "^0.10.7",
     "vuex": "^3.5.1"
   },
