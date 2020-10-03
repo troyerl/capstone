@@ -1,5 +1,11 @@
 <template>
-  <div id="map" ref="map"></div>
+  <!-- <div id="map" ref="map"></div> -->
+  <GmapMap
+  :center="{lat:39.7684, lng:-86.1581}"
+  :zoom="7"
+  style="width: 100vw; height: 100vh"
+>
+</GmapMap>
 </template>
 
 <script>
@@ -19,31 +25,31 @@ export default {
     ]),
   },
   mounted() {
-    const self = this;
-    self.map = new window.google.maps.Map(self.$refs["map"], {
-      center: {lat: 39.7684, lng: -86.1581},
-      zoom: 12
-    })  
+    // const self = this;
+    // self.map = new window.google.maps.Map(self.$refs["map"], {
+    //   center: {lat: 39.7684, lng: -86.1581},
+    //   zoom: 12
+    // })  
 
     // Try HTML5 geolocation.
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        self.map.setCenter(pos);
-        self.$store.dispatch('setCoordinates', position.coords);
-      },
-      () => {
-        console.log('err');
-      }
-    );
-  } else {
-    // Browser doesn't support Geolocation
-    console.log('err');
-  } 
+  // if (navigator.geolocation) {
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       const pos = {
+  //         lat: position.coords.latitude,
+  //         lng: position.coords.longitude,
+  //       };
+  //       self.map.setCenter(pos);
+  //       self.$store.dispatch('setCoordinates', position.coords);
+  //     },
+  //     () => {
+  //       console.log('err');
+  //     }
+  //   );
+  // } else {
+  //   // Browser doesn't support Geolocation
+  //   console.log('err');
+  // } 
   },
 }
 </script>
