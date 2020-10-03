@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     uploadImage() {
-      // console.log(this.file);
       const self = this;
       if (self.file) {
         EXIF.getData(self.file, function() {

@@ -20,7 +20,7 @@ export default {
   },
   mounted() {
     this.map = new window.google.maps.Map(this.$refs["map"], {
-      center: {lat: this.coordinates.latitude, lng: this.coordinates.longitude},
+      center: {lat: 39.7684, lng: -86.1581},
       zoom: 12
     })  
 
