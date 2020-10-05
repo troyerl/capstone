@@ -12,7 +12,7 @@
         <div>
           <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
           <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
-          <pre>{{JSON.stringify(test) | pretty }}</pre>
+          <pre>{{ JSON.stringify(test, null, '\t') }}</pre>
         </div>
       </div>
     </b-modal>
