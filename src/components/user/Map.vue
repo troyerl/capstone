@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     getPosition(m) {
+      console.log(m);
       let pos = {
         lng: 0,
         lat: 0
