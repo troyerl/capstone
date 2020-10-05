@@ -31,31 +31,25 @@ export default {
     ]),
   },
   mounted() {
-    const self = this;
-    self.$getLocation()
+    this.$getLocation()
       .then(coordinates => {
         this.$store.dispatch('setCoordinates', coordinates);
       });
   },
   methods: {
     getPosition(m) {
-      let pos = {
-        lng: 0,
-        lat: 0
-      }
-      if ('GPSLatitudeRef' in m.exifdata && 'GPSLongitudeRef' in m.exifdata) {
-        pos = {
-          lng: this.convertDMSToDD({ location: m.exifdata.GPSLongitude, direction: m.exifdata.GPSLongitudeRef }),
-          lat: this.convertDMSToDD({ location: m.exifdata.GPSLatitude, direction: m.exifdata.GPSLatitudeRef })
-        }
-      } else {
-        pos = {
-          lng: this.convertDMSToDD({ location: m.exifdata.GPSLongitude, direction: null }),
-          lat: this.convertDMSToDD({ location: m.exifdata.GPSLatitude, direction: null })
-        }
+      let lngCoords = { location: m.exifdata.GPSLongitude, direction: null };
+      let latCoords = { location: m.exifdata.GPSLatitude, direction: null };
+
+      if (('GPSLatitudeRef' in m.exifdata) && ('GPSLongitudeRef' in m.exifdata)) {
+        latCoords.direction = m.exifdata.GPSLatitudeRef;
+        lngCoords.direction = m.exifdata.GPSLongitudeRef;
       }
 
-      return pos;
+      return {
+        lng: this.convertDMSToDD(lngCoords),
+        lat: this.convertDMSToDD(latCoords),
+      };
     },
     convertDMSToDD({ location, direction }) {
       let degrees = location[0]; 
@@ -64,10 +58,8 @@ export default {
 
       let dd = degrees + (minutes/60) + (seconds/3600);
 
-      if (direction) {
-        if (direction === "S" || direction === "W") {
-          dd = -Math.abs(dd); 
-        }
+      if (direction && (direction === "S" || direction === "W")) {
+        dd = -Math.abs(dd); 
       }
       
       return dd;
