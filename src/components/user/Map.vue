@@ -63,6 +63,12 @@ export default {
       let seconds  = location[2];
 
       let dd = degrees + (minutes/60) + (seconds/3600);
+
+      if (direction) {
+        if (direction === "S" || direction === "W") {
+          dd = -Math.abs(dd); 
+        }
+      }
       
       return dd;
     },
