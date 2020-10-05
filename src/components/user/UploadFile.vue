@@ -12,6 +12,7 @@
         <div>
           <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
           <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
+          <pre>{{JSON.stringify(test) | pretty }}</pre>
         </div>
       </div>
     </b-modal>
@@ -26,6 +27,7 @@ export default {
   data() {
     return {
       file: null,
+      test: {}
     }
   },
   methods: {
@@ -40,7 +42,8 @@ export default {
           }
            
           self.$store.dispatch('addToImages', self.file);
-          self.$bvModal.hide('upload-photos-modal');
+          self.test = self.file;
+          // self.$bvModal.hide('upload-photos-modal');
         })
       }
     },

@@ -39,10 +39,20 @@ export default {
   },
   methods: {
     getPosition(m) {
-      return {
-        lng: this.convertDMSToDD(m.exifdata.GPSLongitude),
-        lat: this.convertDMSToDD(m.exifdata.GPSLatitude)
+      let pos = {
+        lng: 0,
+        lat: 0
       }
+      // if (m.exifdat) {
+
+      // } else {
+      //   pos = {
+      //     lng: this.convertDMSToDD(m.exifdata.GPSLongitude),
+      //     lat: this.convertDMSToDD(m.exifdata.GPSLatitude)
+      //   }
+      // }
+
+      return pos;
     },
     convertDMSToDD(location) {
       let degrees = location[0]; 
