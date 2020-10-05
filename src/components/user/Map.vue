@@ -43,7 +43,7 @@ export default {
         lng: 0,
         lat: 0
       }
-      if (m.exifdata.hasOwnProperty('GPSLatitudeRef') && m.exifdata.hasOwnProperty('GPSLongitudeRef')) {
+      if ('GPSLatitudeRef' in m.exifdata && 'GPSLongitudeRef' in m.exifdata) {
         pos = {
           lng: this.convertDMSToDD({ location: m.exifdata.GPSLongitude, direction: m.exifdata.GPSLongitudeRef }),
           lat: this.convertDMSToDD({ location: m.exifdata.GPSLatitude, direction: m.exifdata.GPSLatitudeRef })
