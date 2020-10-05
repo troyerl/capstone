@@ -39,23 +39,25 @@ export default {
   },
   methods: {
     getPosition(m) {
-      console.log(m);
       let pos = {
         lng: 0,
         lat: 0
       }
-      // if (m.exifdat) {
-
-      // } else {
-      //   pos = {
-      //     lng: this.convertDMSToDD(m.exifdata.GPSLongitude),
-      //     lat: this.convertDMSToDD(m.exifdata.GPSLatitude)
-      //   }
-      // }
+      if (m.exifdata.hasOwnProperty('GPSLatitudeRef') && m.exifdata.hasOwnProperty('GPSLongitudeRef')) {
+        pos = {
+          lng: this.convertDMSToDD({ location: m.exifdata.GPSLongitude, direction: m.exifdata.GPSLongitudeRef }),
+          lat: this.convertDMSToDD({ location: m.exifdata.GPSLatitude, direction: m.exifdata.GPSLatitudeRef })
+        }
+      } else {
+        pos = {
+          lng: this.convertDMSToDD({ location: m.exifdata.GPSLongitude, direction: null }),
+          lat: this.convertDMSToDD({ location: m.exifdata.GPSLatitude, direction: null })
+        }
+      }
 
       return pos;
     },
-    convertDMSToDD(location) {
+    convertDMSToDD({ location, direction }) {
       let degrees = location[0]; 
       let minutes = location[1];
       let seconds  = location[2];

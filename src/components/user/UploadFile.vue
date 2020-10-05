@@ -39,14 +39,11 @@ export default {
             let coordinates = await self.$getLocation();
             self.file.exifdata["GPSLatitude"] = self.convertDDToDMS(coordinates.lat);
             self.file.exifdata["GPSLongitude"] = self.convertDDToDMS(coordinates.lng);
-          } else {
-            self.file.exifdata.GPSLatitude[0] = self.updateLocationDirection(self.file.exifdata.GPSLatitude[0], self.file.exifdata.GPSLatitudeRef);
-            self.file.exifdata.GPSLongitude[0] = self.updateLocationDirection(self.file.exifdata.GPSLongitude[0], self.file.exifdata.GPSLongitudeRef)
           }
            
           self.$store.dispatch('addToImages', self.file);
-          self.test = self.file;
-          // self.$bvModal.hide('upload-photos-modal');
+          // self.test = self.file;
+          self.$bvModal.hide('upload-photos-modal');
         })
       }
     },
