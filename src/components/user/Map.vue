@@ -51,10 +51,7 @@ export default {
         lat: this.convertDMSToDD(latCoords),
       };
     },
-    convertDMSToDD({ location, direction }) {
-      let degrees = location[0]; 
-      let minutes = location[1];
-      let seconds  = location[2];
+    convertDMSToDD({ location: [degrees, minutes, seconds], direction }) {
 
       let dd = degrees + (minutes/60) + (seconds/3600);
 

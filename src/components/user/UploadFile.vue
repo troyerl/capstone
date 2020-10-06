@@ -77,13 +77,11 @@ export default {
       ];
     },
     updateLocationDirection(degrees, direction) {
-      let newDegrees = degrees;
-      
       if (direction === "S" || direction === "W") {
-          newDegrees = -Math.abs(newDegrees); 
+          degrees = -Math.abs(degrees); 
       }
       
-      return newDegrees;
+      return degrees;
     }
   }
 }
@@ -91,7 +89,7 @@ export default {
 
 <style scoped>
   .add-image-button {
-    background-color: #D8554D; /* Green */
+    background-color: #D8554D;
     border: none;
     color: white;
     padding: 15px;

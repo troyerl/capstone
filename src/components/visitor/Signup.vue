@@ -1,86 +1,91 @@
 <template>
-  <div class="signup d-flex justify-content-center align-items-center">
+  <div class="signup d-flex flex-column justify-content-center align-items-center">
     <b-card
-    title="Card Title"
-    class="mb-2 signup-card"
-  >
-    <b-form @submit="onSubmit">
-      <div v-if="showUserAuth">
-        <b-form-group
-          id="input-group-1"
-          label="Code:"
-          label-for="input-1"
-        >
-          <b-form-input
-            id="input-1"
-            v-model="code"
-            type="text"
-            required
-            placeholder="Enter code sent to email"
-          ></b-form-input>
-        </b-form-group>
+      class="mb-2 signup-card"
+    >
+      <b-form @submit="onSubmit">
+        <h1 class="text-center">{{showUserAuth ? 'Input Code' : 'Signup'}}</h1>
+        <div v-if="showUserAuth">
+          <p class="text-center">A code has been sent to the email provided. Please copy that code and input below.</p>
+          <b-form-group
+            id="input-group-1"
+            label-for="input-1"
+          >
+            <b-form-input
+              id="input-1"
+              v-model="code"
+              type="text"
+              required
+              placeholder="Enter code"
+            ></b-form-input>
+          </b-form-group>
+          <div class="d-flex justify-content-center mt-4">
+            <b-button type="button" variant="primary" class="mr-4" @click="showUserAuth = false">Cancel</b-button>
+            <b-button type="submit" variant="primary">Confirm Code</b-button>
+          </div>
+        </div>
+        <div v-else>
+          <b-form-group
+            id="input-group-1"
+            label="Username:"
+            label-for="input-1"
+          >
+            <b-form-input
+              id="input-1"
+              v-model="userInfo.username"
+              type="text"
+              required
+              placeholder="Enter username"
+            ></b-form-input>
+          </b-form-group>
 
-        <b-button type="submit" variant="primary">Confirm Code</b-button>
-        <b-button type="button" variant="primary" @click="showUserAuth = false">Cancel</b-button>
+          <b-form-group
+            id="input-group-1"
+            label="Email:"
+            label-for="input-1"
+          >
+            <b-form-input
+              id="input-1"
+              v-model="userInfo.attributes.email"
+              type="email"
+              required
+              placeholder="Enter email"
+            ></b-form-input>
+          </b-form-group>
 
-      </div>
-      <div v-else>
-        <b-form-group
-          id="input-group-1"
-          label="Username:"
-          label-for="input-1"
-        >
-          <b-form-input
-            id="input-1"
-            v-model="userInfo.username"
-            type="text"
-            required
-            placeholder="Enter username"
-          ></b-form-input>
-        </b-form-group>
+          <b-form-group id="input-group-2" label="Password:" label-for="input-2">
+            <b-form-input
+              id="input-2"
+              v-model="userInfo.password"
+              required
+              placeholder="Enter password"
+            ></b-form-input>
+          </b-form-group>
 
-        <b-form-group
-          id="input-group-1"
-          label="Email:"
-          label-for="input-1"
-        >
-          <b-form-input
-            id="input-1"
-            v-model="userInfo.attributes.email"
-            type="email"
-            required
-            placeholder="Enter Email"
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group id="input-group-2" label="Password:" label-for="input-2">
-          <b-form-input
-            id="input-2"
-            v-model="userInfo.password"
-            required
-            placeholder="Enter password"
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group id="input-group-2" label="Confirm Password:" label-for="input-2">
-          <b-form-input
-            id="input-2"
-            v-model="confirmPassword"
-            required
-            placeholder="Confirm password"
-          ></b-form-input>
-        </b-form-group>
-
-        <b-button type="submit" variant="primary">Signup</b-button>
-      </div>
-      
-    </b-form>
-  </b-card>
+          <b-form-group id="input-group-2" label="Confirm Password:" label-for="input-2">
+            <b-form-input
+              id="input-2"
+              v-model="confirmPassword"
+              required
+              placeholder="Confirm password"
+            ></b-form-input>
+          </b-form-group>
+          
+          <div v-if="error" class="text-center">
+            <b-alert show variant="danger">{{error}}</b-alert>
+          </div>
+          <b-button type="submit" variant="primary">Signup</b-button>
+        </div>
+        
+      </b-form>
+    </b-card>
+    <p class="text-white">Already an account? <router-link to="/">Login!</router-link></p>
   </div>
 </template>
 
 <script>
 import { Auth } from 'aws-amplify';
+import routes from '../../router/routes';
 
 export default {
   name: 'Signup',
@@ -95,29 +100,41 @@ export default {
       },
       confirmPassword: null,
       showUserAuth: false,
-      code: null
+      code: null,
+      id: null,
+      error: null
     }
   },
   methods: {
     onSubmit(e) {
       e.preventDefault();
-      if (this.showUserAuth) {
-        Auth.confirmSignUp(this.userInfo.username, this.code).then((res) => {
-          console.log(res);
+      const self = this;
+      if (self.showUserAuth) {
+        Auth.confirmSignUp(self.userInfo.username, self.code).then(() => {
+          self.$store.dispatch('setNewUser', {
+            username: self.userInfo.username,
+            email: self.userInfo.attributes.email,
+            id: self.id
+          });
+          self.$router.push(routes.main);
         }).catch(err => {
-          console.log(err);
+          self.error = err.message;
         });
       } else {
-        if (this.confirmPassword === this.userInfo.password) {
-        Auth.signUp(this.userInfo)
-          .then(data => {
-            this.showUserAuth = true;
-            console.log(data);
-          })
-          .catch(err => console.log(err));
+        if (self.userInfo.username && self.userInfo.attributes.email && self.userInfo.password && self.confirmPassword) {
+          if (self.confirmPassword === self.userInfo.password) {
+            Auth.signUp(self.userInfo)
+              .then(data => {
+                self.showUserAuth = true;
+                self.id = data.userSub;
+              }).catch(err => {self.error = err.message});
+          } else {
+            self.error = 'Passwords do not match';
+          }
+        } else {
+          self.error = 'Required info missing to create account';
         }
       }
-      
     }
   }
 }
@@ -136,7 +153,7 @@ export default {
 
   @media only screen and (min-width: 768px) {
     .signup-card {
-      width: 40vw;
+      width: 30vw;
     }
   }
 </style>

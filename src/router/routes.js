@@ -1,5 +1,5 @@
 export default {
-  main: '/',
-  login: '/login',
+  main: '/user',
+  login: '/',
   signup: '/signup'
 }

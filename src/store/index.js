@@ -18,6 +18,9 @@ export default new Vuex.Store({
     },
     updateImages(state, payload) {
       state.images.push(payload);
+    },
+    setUser(state, payload) {
+      state.userInfo = payload;
     }
   },
   actions: {
@@ -26,6 +29,12 @@ export default new Vuex.Store({
     },
     addToImages(context, payload) {
       context.commit('updateImages', payload);
+    },
+    setNewUser(context, payload) {
+      context.commit('setUser', payload);
+    },
+    getLoggedInUser(context, payload) {
+      context.commit('setUser', payload);
     }
   },
   getters: {

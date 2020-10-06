@@ -28,9 +28,10 @@ import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
-// import router from './router';
+import router from './router';
 
 new Vue({
+  router,
   store,
   render: h => h(App),
 }).$mount('#app')
