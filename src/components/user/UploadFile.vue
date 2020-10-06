@@ -89,7 +89,7 @@ export default {
 
 <style scoped>
   .add-image-button {
-    background-color: #D8554D;
+    background-color: #D8554D; /* Green */
     border: none;
     color: white;
     padding: 15px;
