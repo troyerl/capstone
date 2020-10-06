@@ -19,6 +19,10 @@
             placeholder="Enter code sent to email"
           ></b-form-input>
         </b-form-group>
+
+        <b-button type="submit" variant="primary">Confirm Code</b-button>
+        <b-button type="button" variant="primary" @click="showUserAuth = false">Cancel</b-button>
+
       </div>
       <div v-else>
         <b-form-group
