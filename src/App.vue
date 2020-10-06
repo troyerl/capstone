@@ -1,19 +1,22 @@
 <template>
   <div id="app">
-    <Map/>
-    <UploadFile/>
+    <!-- <Map/>
+    <UploadFile/> -->
+    <Signup/>
   </div>
 </template>
 
 <script>
-import Map from './components/user/Map';
-import UploadFile from './components/user/UploadFile';
+// import Map from './components/user/Map';
+// import UploadFile from './components/user/UploadFile';
+import Signup from './components/visitor/Signup';
 
 export default {
   name: 'App',
   components: {
-    Map,
-    UploadFile
+    // Map,
+    // UploadFile
+    Signup
   }
 }
 </script>

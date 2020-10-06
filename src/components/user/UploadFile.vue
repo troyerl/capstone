@@ -6,13 +6,17 @@
       </svg>
     </button>
     <b-modal id="upload-photos-modal" hide-footer hide-header centered>
-      <div class="d-flex flex-column justify-content-center align-items-center">
-        <h4>Upload Photos!</h4>
-        <b-form-file v-model="file" class="mt-3" plain></b-form-file>
-        <div>
-          <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
-          <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
-          <pre>{{ JSON.stringify(test, null, '\t') }}</pre>
+      <div class="text-center">
+        <h4>{{uploadingFiles ? 'Uploading File(s)' : 'Upload Photos!'}}</h4>
+        <div v-if="uploadingFiles">
+          <b-spinner class="my-3" label="Loading..."></b-spinner>
+        </div>
+        <div v-else class="d-flex flex-column justify-content-center align-items-center">
+          <b-form-file v-model="file" class="mt-3"></b-form-file>
+          <div>
+            <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
+            <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
+          </div>
         </div>
       </div>
     </b-modal>
@@ -21,19 +25,21 @@
 
 <script>
 import EXIF from 'exif-js';
+import axios from 'axios';
 
 export default {
   name: 'UploadFile',
   data() {
     return {
       file: null,
-      test: {}
+      uploadingFiles: false
     }
   },
   methods: {
     uploadImage() {
       const self = this;
       if (self.file) {
+        self.uploadingFiles = true;
         EXIF.getData(self.file, async function() {
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
@@ -41,9 +47,19 @@ export default {
             self.file.exifdata["GPSLongitude"] = self.convertDDToDMS(coordinates.lng);
           }
            
-          self.$store.dispatch('addToImages', self.file);
-          // self.test = self.file;
-          self.$bvModal.hide('upload-photos-modal');
+          const baseURL = 'https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image';
+          axios.post(baseURL, self.file, {
+            header: {
+              'Content-Type': self.file.type
+            }
+          }).then(() => {
+              self.$bvModal.hide('upload-photos-modal');
+              self.$store.dispatch('addToImages', self.file);
+              self.uploadingFiles = false;
+            }).catch(err => {
+              console.log("ERROR: " + err);
+              self.uploadingFiles = false;
+            })
         })
       }
     },
