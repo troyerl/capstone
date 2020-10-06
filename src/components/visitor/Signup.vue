@@ -58,6 +58,7 @@
               id="input-2"
               v-model="userInfo.password"
               required
+              type="password"
               placeholder="Enter password"
             ></b-form-input>
           </b-form-group>
@@ -67,6 +68,7 @@
               id="input-2"
               v-model="confirmPassword"
               required
+              type="password"
               placeholder="Confirm password"
             ></b-form-input>
           </b-form-group>
