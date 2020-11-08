@@ -10,11 +10,10 @@
         <h4>{{uploadingFiles ? 'Uploading File(s)' : 'Upload Photos!'}}</h4>
         <div v-if="uploadingFiles">
           <b-spinner class="my-3" label="Loading..."></b-spinner>
-          <p>Lat: {{file.exifdata["GPSLatitude"]}}</p>
-          <p>Long: {{file.exifdata["GPSLongitude"]}}</p>
         </div>
         <div v-else class="d-flex flex-column justify-content-center align-items-center">
           <b-form-file v-model="file" class="mt-3"></b-form-file>
+          <p>{{JSON.stringify(file.exifdata)}}</p>
           <div>
             <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
             <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
@@ -47,7 +46,7 @@ export default {
     uploadImage() {
       const self = this;
       if (self.file) {
-        self.uploadingFiles = true;
+        // self.uploadingFiles = true;
         EXIF.getData(self.file, async function() {
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
@@ -57,8 +56,6 @@ export default {
             self.file.exifdata["GPSLatitude"] = this.convertDMSToDD(self.file.exifdata["GPSLatitude"]);
             self.file.exifdata["GPSLongitude"] = this.convertDMSToDD(self.file.exifdata["GPSLongitude"]);
           }
-
-          console.log(self.file.exifdata);
            
           //https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId="b4db5ad2-549c-4e14-8a02-20b06b0cff03"&LAT=39.7934592&Long=-86.1732864
           // const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${userId.id}&LAT=${}`;
