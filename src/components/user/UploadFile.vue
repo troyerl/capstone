@@ -13,7 +13,7 @@
         </div>
         <div v-else class="d-flex flex-column justify-content-center align-items-center">
           <b-form-file v-model="file" class="mt-3"></b-form-file>
-          <p>{{JSON.stringify(file.exifdata)}}</p>
+          <pre>{{JSON.stringify(file, null, '\t')}}</pre>
           <div>
             <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
             <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
