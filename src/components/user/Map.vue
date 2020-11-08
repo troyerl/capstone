@@ -6,12 +6,12 @@
       :zoom="12"
       style="width: 100vw; height: 100vh"
     >
-      <div :key="index" v-for="(m, index) in images">
-        <GmapInfoWindow
-          :position="getPosition(m)"
-          :options="getContents(m)"
-        />
-      </div>
+      <GmapInfoWindow
+        :key="index"
+        v-for="(m, index) in images"
+        :position="getPosition(m)"
+        :options="getContents(m)"
+      />
     </GmapMap>
     
   </div>
@@ -42,19 +42,6 @@ export default {
         lng: m.exifdata.GPSLongitude,
         lat: m.exifdata.GPSLatitude,
       };
-    },
-    convertDMSToDD({ location, direction }) {
-      let degrees = location[0]; 
-      let minutes = location[1];
-      let seconds  = location[2];
-
-      let dd = degrees + (minutes/60) + (seconds/3600);
-
-      if (direction && (direction === "S" || direction === "W")) {
-        dd = -Math.abs(dd); 
-      }
-      
-      return dd;
     },
     getContents(m) {
       return {
