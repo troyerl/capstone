@@ -59,6 +59,10 @@ export default {
           }
 
           self.test = self.file;
+          self.$store.dispatch('addToImages', self.file);
+          self.$bvModal.hide('upload-photos-modal');
+
+
            
           //https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId="b4db5ad2-549c-4e14-8a02-20b06b0cff03"&LAT=39.7934592&Long=-86.1732864
           // const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${userId.id}&LAT=${}`;
