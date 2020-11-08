@@ -60,7 +60,7 @@ export default {
 
           self.test = self.file;
           self.$store.dispatch('addToImages', self.file);
-          self.$bvModal.hide('upload-photos-modal');
+          // self.$bvModal.hide('upload-photos-modal');
 
 
            
