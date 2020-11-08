@@ -51,14 +51,16 @@ export default {
         EXIF.getData(self.file, async function() {
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
+            self.test = 'created';
             self.file.exifdata["GPSLatitude"] = coordinates.lat;
             self.file.exifdata["GPSLongitude"] = coordinates.lng;
           } else {
+            self.test = 'found';
             self.file.exifdata["GPSLatitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLatitude"]), self.file.exifdata['GPSLatitudeRef']);
             self.file.exifdata["GPSLongitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
-          self.test = self.file;
+          // self.test = self.file;
           self.$store.dispatch('addToImages', self.file);
           // self.$bvModal.hide('upload-photos-modal');
 
