@@ -38,17 +38,9 @@ export default {
   },
   methods: {
     getPosition(m) {
-      let lngCoords = { location: m.exifdata.GPSLongitude, direction: null };
-      let latCoords = { location: m.exifdata.GPSLatitude, direction: null };
-
-      if (('GPSLatitudeRef' in m.exifdata) && ('GPSLongitudeRef' in m.exifdata)) {
-        latCoords.direction = m.exifdata.GPSLatitudeRef;
-        lngCoords.direction = m.exifdata.GPSLongitudeRef;
-      }
-
       return {
-        lng: this.convertDMSToDD(lngCoords),
-        lat: this.convertDMSToDD(latCoords),
+        lng: m.exifdata.GPSLongitude,
+        lat: m.exifdata.GPSLatitude,
       };
     },
     convertDMSToDD({ location, direction }) {
