@@ -25,7 +25,6 @@ export default {
   name: 'Map',
   computed: {
     ...mapState([
-      // map this.count to store.state.count
       'coordinates',
       'images'
     ]),

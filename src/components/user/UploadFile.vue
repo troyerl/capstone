@@ -13,7 +13,6 @@
         </div>
         <div v-else class="d-flex flex-column justify-content-center align-items-center">
           <b-form-file v-model="file" class="mt-3"></b-form-file>
-          <pre>{{JSON.stringify(test, null, '\t')}}</pre>
           <div>
             <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
             <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
@@ -51,18 +50,15 @@ export default {
         EXIF.getData(self.file, async function() {
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
-            self.test = 'created';
             self.file.exifdata["GPSLatitude"] = coordinates.lat;
             self.file.exifdata["GPSLongitude"] = coordinates.lng;
           } else {
-            self.test = 'found';
             self.file.exifdata["GPSLatitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLatitude"]), self.file.exifdata['GPSLatitudeRef']);
             self.file.exifdata["GPSLongitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
-          // self.test = self.file;
           self.$store.dispatch('addToImages', self.file);
-          // self.$bvModal.hide('upload-photos-modal');
+          self.$bvModal.hide('upload-photos-modal');
 
 
            
