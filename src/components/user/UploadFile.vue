@@ -54,8 +54,8 @@ export default {
             self.file.exifdata["GPSLatitude"] = coordinates.lat;
             self.file.exifdata["GPSLongitude"] = coordinates.lng;
           } else {
-            self.file.exifdata["GPSLatitude"] = self.convertDMSToDD(self.file.exifdata["GPSLatitude"]);
-            self.file.exifdata["GPSLongitude"] = self.convertDMSToDD(self.file.exifdata["GPSLongitude"]);
+            self.file.exifdata["GPSLatitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLatitude"]), self.file.exifdata['GPSLatitudeRef']);
+            self.file.exifdata["GPSLongitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
           self.test = self.file;
