@@ -13,7 +13,7 @@
         </div>
         <div v-else class="d-flex flex-column justify-content-center align-items-center">
           <b-form-file v-model="file" class="mt-3"></b-form-file>
-          <pre>{{JSON.stringify(file, null, '\t')}}</pre>
+          <pre>{{JSON.stringify(test, null, '\t')}}</pre>
           <div>
             <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
             <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
@@ -34,7 +34,8 @@ export default {
   data() {
     return {
       file: null,
-      uploadingFiles: false
+      uploadingFiles: false,
+      test: null
     }
   },
   computed: {
@@ -53,9 +54,11 @@ export default {
             self.file.exifdata["GPSLatitude"] = coordinates.lat;
             self.file.exifdata["GPSLongitude"] = coordinates.lng;
           } else {
-            self.file.exifdata["GPSLatitude"] = this.convertDMSToDD(self.file.exifdata["GPSLatitude"]);
-            self.file.exifdata["GPSLongitude"] = this.convertDMSToDD(self.file.exifdata["GPSLongitude"]);
+            self.file.exifdata["GPSLatitude"] = self.convertDMSToDD(self.file.exifdata["GPSLatitude"]);
+            self.file.exifdata["GPSLongitude"] = self.convertDMSToDD(self.file.exifdata["GPSLongitude"]);
           }
+
+          self.test = self.file.exifdata;
            
           //https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId="b4db5ad2-549c-4e14-8a02-20b06b0cff03"&LAT=39.7934592&Long=-86.1732864
           // const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${userId.id}&LAT=${}`;
