@@ -10,6 +10,8 @@
         <h4>{{uploadingFiles ? 'Uploading File(s)' : 'Upload Photos!'}}</h4>
         <div v-if="uploadingFiles">
           <b-spinner class="my-3" label="Loading..."></b-spinner>
+          <p>Lat: {{file.exifdata["GPSLatitude"]}}</p>
+          <p>Long: {{file.exifdata["GPSLongitude"]}}</p>
         </div>
         <div v-else class="d-flex flex-column justify-content-center align-items-center">
           <b-form-file v-model="file" class="mt-3"></b-form-file>
@@ -25,7 +27,8 @@
 
 <script>
 import EXIF from 'exif-js';
-import axios from 'axios';
+// import axios from 'axios';
+import { mapState } from 'vuex';
 
 export default {
   name: 'UploadFile',
@@ -35,6 +38,11 @@ export default {
       uploadingFiles: false
     }
   },
+  computed: {
+    ...mapState([
+      'userInfo'
+    ])
+  },
   methods: {
     uploadImage() {
       const self = this;
@@ -43,28 +51,37 @@ export default {
         EXIF.getData(self.file, async function() {
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
-            self.file.exifdata["GPSLatitude"] = self.convertDDToDMS(coordinates.lat);
-            self.file.exifdata["GPSLongitude"] = self.convertDDToDMS(coordinates.lng);
+            self.file.exifdata["GPSLatitude"] = coordinates.lat;
+            self.file.exifdata["GPSLongitude"] = coordinates.lng;
+          } else {
+            self.file.exifdata["GPSLatitude"] = this.convertDMSToDD(self.file.exifdata["GPSLatitude"]);
+            self.file.exifdata["GPSLongitude"] = this.convertDMSToDD(self.file.exifdata["GPSLongitude"]);
           }
+
+          console.log(self.file.exifdata);
            
-          const baseURL = 'https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image';
-          axios.post(baseURL, self.file, {
-            header: {
-              'Content-Type': self.file.type
-            }
-          }).then(() => {
-              self.$bvModal.hide('upload-photos-modal');
-              self.$store.dispatch('addToImages', self.file);
-              self.uploadingFiles = false;
-            }).catch(err => {
-              console.log("ERROR: " + err);
-              self.uploadingFiles = false;
-            })
+          //https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId="b4db5ad2-549c-4e14-8a02-20b06b0cff03"&LAT=39.7934592&Long=-86.1732864
+          // const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${userId.id}&LAT=${}`;
+          // axios.post(baseURL, self.file, {
+          //   header: {
+          //     'Content-Type': self.file.type
+          //   }
+          // }).then(() => {
+          //     self.$bvModal.hide('upload-photos-modal');
+          //     self.$store.dispatch('addToImages', self.file);
+          //     self.uploadingFiles = false;
+          //   }).catch(err => {
+          //     console.log("ERROR: " + err);
+          //     self.uploadingFiles = false;
+          //   })
         })
       }
     },
     isEmpty(obj) {
       return JSON.stringify(obj) === '{}';
+    },
+    convertDMSToDD([deg, min, sec]) {
+      return deg + (min/60) + (sec/3600);
     },
     convertDDToDMS(dec) {
       let d = Math.floor(dec);
