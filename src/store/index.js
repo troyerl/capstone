@@ -17,7 +17,15 @@ export default new Vuex.Store({
       state.coordinates = payload;
     },
     updateImages(state, payload) {
-      state.images.push(payload);
+      const fileInfo = payload.filePath.split("/");
+      const imageInfo = state.images.find(imageInfo => imageInfo.folderId === fileInfo[1]);
+
+      if (imageInfo) {
+        imageInfo.file = payload.file;
+        imageInfo.imageName = fileInfo[2];
+      } else {
+        state.images.push({ file: payload.file, folderId: fileInfo[1], imageName: fileInfo[2] });
+      }
     },
     setUser(state, payload) {
       state.userInfo = payload;
@@ -28,6 +36,7 @@ export default new Vuex.Store({
       context.commit('updateCoordinates', payload);
     },
     addToImages(context, payload) {
+      console.log(payload.filePath.split("/"));
       context.commit('updateImages', payload);
     },
     setNewUser(context, payload) {

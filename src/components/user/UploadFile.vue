@@ -25,7 +25,7 @@
 
 <script>
 import EXIF from 'exif-js';
-// import axios from 'axios';
+import axios from 'axios';
 import { mapState } from 'vuex';
 
 export default {
@@ -46,7 +46,7 @@ export default {
     uploadImage() {
       const self = this;
       if (self.file) {
-        // self.uploadingFiles = true;
+        self.uploadingFiles = true;
         EXIF.getData(self.file, async function() {
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
@@ -57,25 +57,19 @@ export default {
             self.file.exifdata["GPSLongitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
-          self.$store.dispatch('addToImages', self.file);
-          self.$bvModal.hide('upload-photos-modal');
-
-
-           
-          //https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId="b4db5ad2-549c-4e14-8a02-20b06b0cff03"&LAT=39.7934592&Long=-86.1732864
-          // const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${userId.id}&LAT=${}`;
-          // axios.post(baseURL, self.file, {
-          //   header: {
-          //     'Content-Type': self.file.type
-          //   }
-          // }).then(() => {
-          //     self.$bvModal.hide('upload-photos-modal');
-          //     self.$store.dispatch('addToImages', self.file);
-          //     self.uploadingFiles = false;
-          //   }).catch(err => {
-          //     console.log("ERROR: " + err);
-          //     self.uploadingFiles = false;
-          //   })
+          const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${self.userInfo.id}&LAT=${self.file.exifdata["GPSLatitude"]}&LONG=${self.file.exifdata["GPSLongitude"]}`;
+          axios.post(baseURL, self.file, {
+            header: {
+              'Content-Type': self.file.type
+            }
+          }).then((response) => {
+              self.$store.dispatch('addToImages', {file: self.file, filePath: response.data});
+              self.$bvModal.hide('upload-photos-modal');
+              self.uploadingFiles = false;
+            }).catch(err => {
+              console.log("ERROR: " + err);
+              self.uploadingFiles = false;
+            })
         })
       }
     },

@@ -9,8 +9,8 @@
       <GmapInfoWindow
         :key="index"
         v-for="(m, index) in images"
-        :position="getPosition(m)"
-        :options="getContents(m)"
+        :position="getPosition(m.file)"
+        :options="getContents(m.file)"
       />
     </GmapMap>
     
