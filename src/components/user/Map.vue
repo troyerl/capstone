@@ -1,5 +1,4 @@
 <template>
-  <!-- <div id="map" ref="map"></div> -->
   <div>
     <GmapMap
       :center="{lat: coordinates.lat, lng: coordinates.lng}"
@@ -8,9 +7,11 @@
     >
       <GmapInfoWindow
         :key="index"
+        :clickable="true"
         v-for="(m, index) in images"
         :position="getPosition(m)"
         :options="getContents(m.file)"
+        @click="getImagesInFolder(m)"
       />
     </GmapMap>
     
@@ -20,7 +21,6 @@
 
 <script>
 import { mapState } from 'vuex';
-// import axios from 'axios';
 
 export default {
   name: 'Map',
@@ -47,6 +47,9 @@ export default {
       return {
         content: m,
       }
+    },
+    getImagesInFolder(m) {
+      console.log(m)
     }
   }
 }
