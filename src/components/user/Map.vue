@@ -5,14 +5,20 @@
       :zoom="12"
       style="width: 100vw; height: 100vh"
     >
+    <div :key="index + '1'" v-for="(m, index) in images" @click="getImagesInFolder()">
       <GmapInfoWindow
-        :key="index"
+        :key="m.path"
         :clickable="true"
-        v-for="(m, index) in images"
         :position="getPosition(m)"
-        :options="getContents(m.file)"
-        @click="getImagesInFolder(m)"
+        :options="getContents(m.file)"      
       />
+      <GmapMarker
+        :key="index"
+        :position="getPosition(m)"
+        :clickable="true"
+        @click="getImagesInFolder()"
+      />
+    </div>
     </GmapMap>
     
   </div>
@@ -46,10 +52,14 @@ export default {
     getContents(m) {
       return {
         content: m,
+        pixelOffset: {
+          width: 0,
+          height: -35
+        }
       }
     },
-    getImagesInFolder(m) {
-      console.log(m)
+    getImagesInFolder() {
+      console.log('test')
     }
   }
 }
