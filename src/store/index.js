@@ -29,6 +29,9 @@ export default new Vuex.Store({
     },
     setUser(state, payload) {
       state.userInfo = payload;
+    },
+    addNewImage(state, payload) {
+      state.images.push({ ...payload });
     }
   },
   actions: {
@@ -45,11 +48,41 @@ export default new Vuex.Store({
     },
     getLoggedInUser({ commit }, payload) {
       commit('setUser', payload);
-    }
-  },
-  getters: {
-    getCoordinates: state => {
-      return state.coordinates;
+    },
+    fetchUserInfo({ state, dispatch }) {
+      return new Promise((resolve, reject) => {
+        fetch(`https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/user?userId=${state.userInfo.id}`, {
+          method: 'GET', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors', // no-cors, *cors, same-origin
+        })
+        .then(async response => {
+          const data = await response.json();
+          // console.log(data.locations);
+          data.locations.forEach(image => {
+            dispatch('fetchImage', image);
+          });
+          
+          resolve();
+        })
+        .catch(error => {
+          this.errorMessage = error;
+          console.error("There was an error!", error);
+          reject();
+        });
+      })
+    },
+    fetchImage({ commit }, payload) {
+      const { lat, long, topImage } = payload;
+
+      fetch(`https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?imageName=${topImage}`)
+      .then((response) => response.blob())
+      .then((blob) => blob.text())
+      .then((text) => {
+        var image = new Image(50, 50);
+        image.src = `data:image/png;base64,${text}`;
+        const pathSplit = topImage.split("/");
+        commit('addNewImage', { lat: lat * (180/Math.PI), long: long * (180/Math.PI), folderId: pathSplit[1], imageName: pathSplit[2], file: image });
+      });
     }
   }
 })

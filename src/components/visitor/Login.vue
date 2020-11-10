@@ -73,7 +73,11 @@ export default {
             email: user.attributes.email,
             id: user.attributes.sub,
           });
-          this.$router.push(routes.main);
+          this.$store.dispatch('fetchUserInfo').then(() => {
+            this.$router.push(routes.main);
+          }).catch(err => {
+            console.log(err);
+          });
         } catch (error) {
           this.error = error.message;
         }
