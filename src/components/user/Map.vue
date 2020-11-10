@@ -5,7 +5,6 @@
       :zoom="12"
       style="width: 100vw; height: 100vh"
     >
-    <div >
       <GmapInfoWindow
         v-for="(m) in images" @click="getImagesInFolder()"
         :key="m.path"
@@ -20,7 +19,6 @@
         @click="getImagesInFolder()"
         v-for="(m,index) in images" @click="getImagesInFolder()"
       />
-    </div>
     </GmapMap>
     
   </div>
