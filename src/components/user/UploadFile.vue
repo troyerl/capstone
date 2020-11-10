@@ -79,16 +79,6 @@ export default {
     convertDMSToDD([deg, min, sec]) {
       return deg + (min/60) + (sec/3600);
     },
-    convertDDToDMS(dec) {
-      let d = Math.floor(dec);
-      let m = Math.floor((dec - d) * 60);
-      let s = Number(Math.round(((dec - d - m/60) * 3600) + "e2") + "e-2");
-      return [
-        d,
-        m,
-        s
-      ];
-    },
     updateLocationDirection(degrees, direction) {
       if (direction === "S" || direction === "W") {
           degrees = -Math.abs(degrees); 

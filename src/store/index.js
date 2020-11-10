@@ -32,18 +32,19 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    setCoordinates(context, payload) {
-      context.commit('updateCoordinates', payload);
+    setCoordinates({ commit }, payload) {
+      commit('updateCoordinates', payload);
     },
-    addToImages(context, payload) {
-      console.log(payload.filePath.split("/"));
-      context.commit('updateImages', payload);
+    addToImages({ commit }, payload) {
+      const file = payload.file;
+      commit('updateImages', payload);
+      commit('updateCoordinates', { lng: file.exifdata["GPSLongitude"], lat: file.exifdata["GPSLatitude"] });
     },
-    setNewUser(context, payload) {
-      context.commit('setUser', payload);
+    setNewUser({ commit }, payload) {
+      commit('setUser', payload);
     },
-    getLoggedInUser(context, payload) {
-      context.commit('setUser', payload);
+    getLoggedInUser({ commit }, payload) {
+      commit('setUser', payload);
     }
   },
   getters: {
