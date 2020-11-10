@@ -37,10 +37,15 @@ export default {
     ]),
   },
   mounted() {
-    this.$getLocation()
-      .then(coordinates => {
-        this.$store.dispatch('setCoordinates', coordinates);
-      });
+    this.$store.dispatch('fetchUserInfo').then(() => {
+      this.$getLocation()
+        .then(coordinates => {
+          this.$store.dispatch('setCoordinates', coordinates);
+        });
+    }).catch(err => {
+      console.log(err);
+    });
+    
   },
   methods: {
     getPosition(m) {
