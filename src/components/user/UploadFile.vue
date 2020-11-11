@@ -13,6 +13,9 @@
         </div>
         <div v-else class="d-flex flex-column justify-content-center align-items-center">
           <b-form-file v-model="file" class="mt-3"></b-form-file>
+          <div v-if="error">
+            <b-alert show variant="danger">{{error}}</b-alert>
+          </div>
           <div>
             <b-button class="mt-3 mr-3" @click="uploadImage">Upload</b-button>
             <b-button class="mt-3" @click="$bvModal.hide('upload-photos-modal')">Cancel</b-button>
@@ -32,7 +35,8 @@ export default {
   data() {
     return {
       file: null,
-      uploadingFiles: false,    
+      uploadingFiles: false,
+      error: null
     }
   },
   computed: {
@@ -45,9 +49,10 @@ export default {
       const self = this;
       if (self.file) {
         self.uploadingFiles = true;
+        console.log(self.file["GPSLatitude"]);
         EXIF.getData(self.file, async function() {
           let lat, long;
-          if (self.isEmpty(self.file.exifdata)) {
+          if (self.isEmpty(self.file.exifdata) || !self.file["GPSLatitude"] || !self.file["GPSLongitude"]) {
             let coordinates = await self.$getLocation();
             lat = coordinates.lat;
             long = coordinates.lng;
@@ -56,9 +61,14 @@ export default {
             long = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
-          self.$store.dispatch('uploadImage', { lat, long, file: self.file });
-          self.$bvModal.hide('upload-photos-modal');
-          self.uploadingFiles = false;
+          self.$store.dispatch('uploadImage', { lat, long, file: self.file }).then(() => {
+            self.$bvModal.hide('upload-photos-modal');
+            self.uploadingFiles = false;
+          }).catch(err => {
+            self.error = err;
+            self.uploadingFiles = false
+          });
+          
         })
       }
     },

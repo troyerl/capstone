@@ -96,29 +96,33 @@ export default new Vuex.Store({
       });
     },
     uploadImage({ commit, state }, payload) {
-      const { lat, long, file } = payload;
-      const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${state.userInfo.id}&LAT=${lat}&LONG=${long}`;
-      fetch(baseURL, {
-        body: file,
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors',
-        header: {
-          'Content-Type': file.type
-        }
-      }).then(async (response) => {
-        let data = await response.json();
-        const pathSplit = data.split("/");
-
-        let reader = new FileReader();
-        reader.onloadend = function() {
-          const image = new Image(50, 50);
-          image.src = reader.result;
-
-          commit('addNewImage', {lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
-        }
-        reader.readAsDataURL(file);
-      }).catch(err => {
-        console.log(err);
+      return new Promise((resolve, reject) => {
+        const { lat, long, file } = payload;
+        const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${state.userInfo.id}&LAT=${lat}&LONG=${long}`;
+        fetch(baseURL, {
+          body: file,
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors',
+          header: {
+            'Content-Type': file.type
+          }
+        }).then(async (response) => {
+          let data = await response.json();
+          const pathSplit = data.split("/");
+  
+          let reader = new FileReader();
+          reader.onloadend = function() {
+            const image = new Image(50, 50);
+            image.src = reader.result;
+  
+            commit('addNewImage', {lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
+            resolve();
+          }
+          reader.readAsDataURL(file);
+        }).catch(err => {
+          console.log(err);
+          reject(err);
+        })
       })
     }
   }
