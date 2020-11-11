@@ -5,8 +5,9 @@
       :zoom="12"
       style="width: 100vw; height: 100vh"
     >
+    <div v-if="folders.length > 0">
       <GmapInfoWindow
-        v-for="(m) in folders" @click="getImagesInFolder()"
+        v-for="(m) in folders"
         :key="m.path"
         :clickable="true"
         :position="getPosition(m)"
@@ -16,9 +17,10 @@
         :key="index"
         :position="getPosition(m)"
         :clickable="true"
-        @click="getImagesInFolder()"
+        @click="getImagesInFolder(m.folderId)"
         v-for="(m,index) in folders" 
       />
+    </div>
     </GmapMap>
     
   </div>
@@ -30,6 +32,7 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'Map',
+  props: ['toggleShowImages'],
   computed: {
     ...mapState([
       'coordinates',
@@ -41,8 +44,6 @@ export default {
         .then(coordinates => {
           this.$store.dispatch('setCoordinates', coordinates);
         });
-    this.$store.dispatch('fetchUserInfo');
-    
   },
   methods: {
     getPosition(m) {
@@ -60,8 +61,9 @@ export default {
         }
       }
     },
-    getImagesInFolder() {
-      console.log('test')
+    getImagesInFolder(folderId) {
+      this.$store.dispatch('getImageNames', { folderId });
+      this.toggleShowImages();
     }
   }
 }

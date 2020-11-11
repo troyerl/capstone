@@ -49,10 +49,9 @@ export default {
       const self = this;
       if (self.file) {
         self.uploadingFiles = true;
-        console.log(self.file["GPSLatitude"]);
         EXIF.getData(self.file, async function() {
           let lat, long;
-          if (self.isEmpty(self.file.exifdata) || !self.file["GPSLatitude"] || !self.file["GPSLongitude"]) {
+          if (self.isEmpty(self.file.exifdata) || !self.file["GPSLatitude"] || self.file["GPSLongitude"]) {
             let coordinates = await self.$getLocation();
             lat = coordinates.lat;
             long = coordinates.lng;
