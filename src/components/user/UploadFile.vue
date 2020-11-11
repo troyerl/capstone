@@ -25,7 +25,6 @@
 
 <script>
 import EXIF from 'exif-js';
-import axios from 'axios';
 import { mapState } from 'vuex';
 
 export default {
@@ -48,29 +47,34 @@ export default {
       if (self.file) {
         self.uploadingFiles = true;
         EXIF.getData(self.file, async function() {
+          let lat, long;
           if (self.isEmpty(self.file.exifdata)) {
             let coordinates = await self.$getLocation();
-            self.file.exifdata["GPSLatitude"] = coordinates.lat;
-            self.file.exifdata["GPSLongitude"] = coordinates.lng;
+            lat = coordinates.lat;
+            long = coordinates.lng;
           } else {
-            self.file.exifdata["GPSLatitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLatitude"]), self.file.exifdata['GPSLatitudeRef']);
-            self.file.exifdata["GPSLongitude"] = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
+            lat = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLatitude"]), self.file.exifdata['GPSLatitudeRef']);
+            long = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
-          const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${self.userInfo.id}&LAT=${self.file.exifdata["GPSLatitude"]}&LONG=${self.file.exifdata["GPSLongitude"]}`;
-          axios.post(baseURL, self.file, {
+          const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${self.userInfo.id}&LAT=${lat}&LONG=${long}`;
+          fetch(baseURL, {
+            body: self.file,
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors',
             header: {
               'Content-Type': self.file.type
             }
           }).then(async (response) => {
-            const pathSplit = response.data.split("/");
+            let data = await response.json();
+            const pathSplit = data.split("/");
 
             let reader = new FileReader();
             reader.onloadend = function() {
               const image = new Image(50, 50);
               image.src = reader.result;
-              
-              self.$store.dispatch('addToImages', {folderId: pathSplit[1], imageName: pathSplit[2], file: image });
+
+              self.$store.dispatch('addToImages', {lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
               self.$bvModal.hide('upload-photos-modal');
               self.uploadingFiles = false;
             }
