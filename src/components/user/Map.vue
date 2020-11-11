@@ -6,7 +6,7 @@
       style="width: 100vw; height: 100vh"
     >
       <GmapInfoWindow
-        v-for="(m) in images" @click="getImagesInFolder()"
+        v-for="(m) in folders" @click="getImagesInFolder()"
         :key="m.path"
         :clickable="true"
         :position="getPosition(m)"
@@ -17,7 +17,7 @@
         :position="getPosition(m)"
         :clickable="true"
         @click="getImagesInFolder()"
-        v-for="(m,index) in images" @click="getImagesInFolder()"
+        v-for="(m,index) in folders" 
       />
     </GmapMap>
     
@@ -33,7 +33,7 @@ export default {
   computed: {
     ...mapState([
       'coordinates',
-      'images'
+      'folders'
     ]),
   },
   mounted() {

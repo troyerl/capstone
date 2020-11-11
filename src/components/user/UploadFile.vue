@@ -62,14 +62,23 @@ export default {
             header: {
               'Content-Type': self.file.type
             }
-          }).then((response) => {
-              self.$store.dispatch('addToImages', {file: self.file, filePath: response.data});
+          }).then(async (response) => {
+            const pathSplit = response.data.split("/");
+
+            let reader = new FileReader();
+            reader.onloadend = function() {
+              const image = new Image(50, 50);
+              image.src = reader.result;
+              
+              self.$store.dispatch('addToImages', {folderId: pathSplit[1], imageName: pathSplit[2], file: image });
               self.$bvModal.hide('upload-photos-modal');
               self.uploadingFiles = false;
-            }).catch(err => {
-              console.log("ERROR: " + err);
-              self.uploadingFiles = false;
-            })
+            }
+            reader.readAsDataURL(self.file);
+          }).catch(err => {
+            console.log(err);
+            self.uploadingFiles = false;
+          })
         })
       }
     },

@@ -10,7 +10,9 @@ export default new Vuex.Store({
       lng: -86.1581,
       lat: 39.7684
     },
-    images: []
+    folders: [],
+    images: [],
+    imageNames: []
   },
   mutations: {
     updateCoordinates(state, payload) {
@@ -18,20 +20,28 @@ export default new Vuex.Store({
     },
     updateImages(state, payload) {
       const fileInfo = payload.filePath.split("/");
-      const imageInfo = state.images.find(imageInfo => imageInfo.folderId === fileInfo[1]);
+      const imageInfo = state.folders.find(imageInfo => imageInfo.folderId === fileInfo[1]);
 
       if (imageInfo) {
         imageInfo.file = payload.file;
         imageInfo.imageName = fileInfo[2];
       } else {
-        state.images.push({ file: payload.file, folderId: fileInfo[1], imageName: fileInfo[2] });
+        state.folders.push({ file: payload.file, folderId: fileInfo[1], imageName: fileInfo[2] });
       }
     },
     setUser(state, payload) {
       state.userInfo = payload;
     },
     addNewImage(state, payload) {
-      state.images.push({ ...payload });
+      const { folderId, imageName, file } = payload;
+      const imageInfo = state.folders.find(imageInfo => imageInfo.folderId === folderId);
+
+      if (imageInfo) {
+        imageInfo.imageName = imageName;
+        imageInfo.file = file;
+      } else {
+        state.folders.push({ ...payload });
+      }
     }
   },
   actions: {
@@ -39,9 +49,7 @@ export default new Vuex.Store({
       commit('updateCoordinates', payload);
     },
     addToImages({ commit }, payload) {
-      const file = payload.file;
-      commit('updateImages', payload);
-      commit('updateCoordinates', { lng: file.exifdata["GPSLongitude"], lat: file.exifdata["GPSLatitude"] });
+      commit('addNewImage', payload);
     },
     setNewUser({ commit }, payload) {
       commit('setUser', payload);
@@ -74,15 +82,21 @@ export default new Vuex.Store({
     fetchImage({ commit }, payload) {
       const { lat, long, topImage } = payload;
 
-      fetch(`https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?imageName=${topImage}`)
+      fetch(`https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?imageName=${topImage}`, {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+      })
       .then((response) => response.blob())
       .then((blob) => blob.text())
       .then((text) => {
-        var image = new Image(50, 50);
-        image.src = `data:image/png;base64,${text}`;
         const pathSplit = topImage.split("/");
+        var image = new Image(50, 50);
+        image.src = `data:image/${pathSplit[2].split(".")[1]};base64,${text}`;
         commit('addNewImage', { lat: lat * (180/Math.PI), long: long * (180/Math.PI), folderId: pathSplit[1], imageName: pathSplit[2], file: image });
       });
+    },
+    getImageNames() {
+
     }
   }
 })
