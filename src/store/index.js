@@ -95,8 +95,31 @@ export default new Vuex.Store({
         commit('addNewImage', { lat: lat * (180/Math.PI), long: long * (180/Math.PI), folderId: pathSplit[1], imageName: pathSplit[2], file: image });
       });
     },
-    getImageNames() {
+    uploadImage({ commit, state }, payload) {
+      const { lat, long, file } = payload;
+      const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${state.userInfo.id}&LAT=${lat}&LONG=${long}`;
+      fetch(baseURL, {
+        body: file,
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors',
+        header: {
+          'Content-Type': file.type
+        }
+      }).then(async (response) => {
+        let data = await response.json();
+        const pathSplit = data.split("/");
 
+        let reader = new FileReader();
+        reader.onloadend = function() {
+          const image = new Image(50, 50);
+          image.src = reader.result;
+
+          commit('addNewImage', {lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
+        }
+        reader.readAsDataURL(file);
+      }).catch(err => {
+        console.log(err);
+      })
     }
   }
 })

@@ -32,8 +32,7 @@ export default {
   data() {
     return {
       file: null,
-      uploadingFiles: false,
-      test: null
+      uploadingFiles: false,    
     }
   },
   computed: {
@@ -57,32 +56,9 @@ export default {
             long = self.updateLocationDirection(self.convertDMSToDD(self.file.exifdata["GPSLongitude"]), self.file.exifdata['GPSLongitudeRef']);
           }
 
-          const baseURL = `https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?userId=${self.userInfo.id}&LAT=${lat}&LONG=${long}`;
-          fetch(baseURL, {
-            body: self.file,
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors',
-            header: {
-              'Content-Type': self.file.type
-            }
-          }).then(async (response) => {
-            let data = await response.json();
-            const pathSplit = data.split("/");
-
-            let reader = new FileReader();
-            reader.onloadend = function() {
-              const image = new Image(50, 50);
-              image.src = reader.result;
-
-              self.$store.dispatch('addToImages', {lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
-              self.$bvModal.hide('upload-photos-modal');
-              self.uploadingFiles = false;
-            }
-            reader.readAsDataURL(self.file);
-          }).catch(err => {
-            console.log(err);
-            self.uploadingFiles = false;
-          })
+          self.$store.dispatch('uploadImage', { lat, long, file: self.file });
+          self.$bvModal.hide('upload-photos-modal');
+          self.uploadingFiles = false;
         })
       }
     },
