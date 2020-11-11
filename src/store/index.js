@@ -16,7 +16,8 @@ export default new Vuex.Store({
     images: [],
     imageRoutes: [],
     currentImageIndex: 0,
-    showFetchImagesLoader: false
+    loadedImageNumber: 0,
+    imageAmountInImagesArray: 0
   },
   mutations: {
     updateCoordinates(state, payload) {
@@ -48,6 +49,9 @@ export default new Vuex.Store({
       state.folders = [];
       state.images = [];
       state.imageRoutes = [];
+      state.currentImageIndex = 0;
+      state.loadedImageNumber = 0;
+      state.imageAmountInImagesArray = 0;
     },
     addNewImage(state, payload) {
       const { folderId, imageName, file } = payload;
@@ -70,9 +74,16 @@ export default new Vuex.Store({
       state.images = [];
       state.imageRoutes = [];
       state.currentImageIndex = 0;
+      state.imageAmountInImagesArray = 0;
     },
-    toggleImageLoader(state) {
-      state.showFetchImagesLoader = !state.showFetchImagesLoader;
+    updateIndex(state, indexAmount) {
+      state.currentImageIndex += indexAmount;
+    },
+    increaseLoadImage(state) {
+      state.loadedImageNumber++;
+    },
+    increaseImageAmountInImagesArray(state) {
+      state.imageAmountInImagesArray++;
     }
   },
   actions: {
@@ -175,7 +186,6 @@ export default new Vuex.Store({
       });
     },
     getImageNames({ commit, state, dispatch }, payload) {
-      commit('toggleImageLoader');
 
       fetch(`https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/location?userId=${state.userInfo.id}&path=${payload.folderId}`, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -188,25 +198,33 @@ export default new Vuex.Store({
         const firstNineImages = 9;
         for(let i = 0; i < firstNineImages; i++) {
           if (data[i]) {
+            commit('increaseImageAmountInImagesArray');
             dispatch('getImagesFromFolder', data[i]);
           }
         }
-        commit('toggleImageLoader');
+        commit('updateIndex', 9);
+
       })
       .catch(error => {
         console.error("There was an error!", error);
       })
     },
     loadMoreImages({ commit, dispatch, state}) {
-      commit('toggleImageLoader');
       let currentIndex = state.currentImageIndex;
       for (let i = currentIndex; i < currentIndex + 9; i++) {
-        dispatch('getImagesFromFolder', state.imageRoutes[i]);
+        if (state.imageRoutes[i]) {
+          commit('increaseImageAmountInImagesArray');
+          dispatch('getImagesFromFolder', state.imageRoutes[i]);
+        }
       }
-      commit('toggleImageLoader');
+
+      commit('updateIndex', 9);
     },
     clearFolderSearch({ commit }) {
       commit('clearFoldersAndImages');
+    },
+    increaseLoadedImageNumber({ commit }) {
+      commit('increaseLoadImage');
     }
   }
 })

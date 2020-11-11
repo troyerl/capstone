@@ -7,15 +7,15 @@
         <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
       </svg>
     </template>
-    <div v-show="showFetchImagesLoader">
+    <div v-if="!showImages" class="d-flex justify-content-center flex-column align-items-center">
         <b-spinner class="my-3" label="Logging In..."></b-spinner>
+        <p>Loading Images...</p>
     </div>
-    <div v-show="!showFetchImagesLoader" class="d-flex flex-wrap justify-content-center text-center">
+    <div class="d-flex flex-wrap justify-content-center text-center">
       <div :key="index" v-for="(image, index) in images">
-        <img width="75" height="75" class="img mx-3 mt-2" :src="image.src" alt="" v-if="image.complete">
-        <b-skeleton-img no-aspect height="75px" v-else></b-skeleton-img>
+        <img v-show="showImages" width="75" height="75" class="img mx-3 mt-2" :src="image.src" alt="" @load="test()">
       </div>
-      <b-button class="mt-3" block variant="primary">Load More...</b-button>
+      <b-button class="mt-3" block variant="primary" @click="loadMore()" v-if="(imageRoutes.length !== images.length) && showImages">Load More...</b-button>
     </div>
   </b-modal>
 </template>
@@ -29,19 +29,29 @@ export default {
     ...mapState([
       'imageRoutes',
       'images',
-      'showFetchImagesLoader'
-    ])
+      'imageAmountInImagesArray'
+    ]),
+    showImages() {
+      return this.loadImageNumber === this.imageAmountInImagesArray;
+    }
   },
   data() {
     return {
-      imagesCheck: 0
+      loadImageNumber: 0
     }
   },
   methods: {
     closeModal() {
       this.$store.dispatch('clearFolderSearch');
       this.toggleShowImages();
+      this.loadImageNumber = 0;
     },
+    loadMore() {
+      this.$store.dispatch('loadMoreImages');
+    },
+    test(){
+      this.loadImageNumber += 1;
+    }
   }
 }
 </script>
