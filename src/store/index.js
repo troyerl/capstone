@@ -150,17 +150,9 @@ export default new Vuex.Store({
           }
         }).then(async (response) => {
           let data = await response.json();
-          const pathSplit = data.split("/");
-
-          let reader = new FileReader();
-          reader.onloadend = function () {
-            const image = new Image(50, 50);
-            image.src = reader.result;
-
-            commit('addNewImage', { lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
-            resolve();
-          }
-          reader.readAsDataURL(file);
+          const pathSplit = data.path.split("/");
+          commit('addNewImage', { lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: data.imageUrl });
+          resolve();
         }).catch(err => {
           console.log(err);
           reject(err);

@@ -47,6 +47,7 @@ export default {
   methods: {
     uploadImage() {
       const self = this;
+      self.error = null;
       if (self.file) {
         self.uploadingFiles = true;
         EXIF.getData(self.file, async function() {
