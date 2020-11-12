@@ -84,6 +84,24 @@ export default new Vuex.Store({
     },
     increaseImageAmountInImagesArray(state) {
       state.imageAmountInImagesArray++;
+    },
+    removeImage(state, imageIdx) {
+      state.images.splice(imageIdx, 1);
+    },
+    removeImageRoute(state, imageIdx) {
+      state.imageRoutes.splice(imageIdx, 1);
+    },
+    decreaseImageAmountInImagesArray(state) {
+      state.imageAmountInImagesArray--;
+    },
+    clearImageAmountInImagesArray(state) {
+      state.imageAmountInImagesArray = 0;
+    },
+    clearImagesFromFolder(state) {
+      state.images = [];
+    },
+    clearCurrentImageIndex(state) {
+      state.currentImageIndex = 0;
     }
   },
   actions: {
@@ -170,7 +188,6 @@ export default new Vuex.Store({
         });
     },
     getImageNames({ commit, state, dispatch }, payload) {
-
       fetch(`https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/location?userId=${state.userInfo.id}&path=${payload.folderId}`, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
@@ -178,7 +195,9 @@ export default new Vuex.Store({
         .then(async response => {
           const data = await response.json();
           commit('setFolderImages', { imageRoutes: data });
-
+          commit('clearImageAmountInImagesArray');
+          commit('clearImagesFromFolder');
+          commit('clearCurrentImageIndex');
           const firstNineImages = 9;
           for (let i = 0; i < firstNineImages; i++) {
             if (data[i]) {
@@ -209,6 +228,23 @@ export default new Vuex.Store({
     },
     increaseLoadedImageNumber({ commit }) {
       commit('increaseLoadImage');
+    },
+    deleteImage({ commit, state }, imageIdx) {
+      return new Promise((resolve, reject) => {
+        fetch(` https://gckm6smf0j.execute-api.us-east-1.amazonaws.com/image?imageName=${state.imageRoutes[imageIdx]}`, {
+          method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+          mode: 'cors', // no-cors, *cors, same-origin
+        })
+        .then(() => {
+          commit('removeImage', imageIdx);
+          commit('removeImageRoute', imageIdx);
+          commit('decreaseImageAmountInImagesArray');
+          resolve();
+        }).catch(err => {
+          console.log(err);
+          reject();
+        })
+      })
     }
   }
 })

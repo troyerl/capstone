@@ -14,7 +14,7 @@
       </div>
       <div class="d-flex flex-wrap justify-content-center text-center">
         <div :key="index" v-for="(image, index) in images">
-          <img v-show="showImages" width="75" height="75" class="img mx-3 mt-2" :src="image" alt="image" @load="test()" @click="showSelectedImage(image)">
+          <img v-show="showImages" width="75" height="75" class="img mx-3 mt-2" :src="image" alt="image" @load="test()" @click="showSelectedImage(image, index)">
         </div>
         <b-button class="mt-3" block variant="primary" @click="loadMore()" v-if="(imageRoutes.length !== images.length) && showImages">Load More...</b-button>
       </div>
@@ -23,6 +23,7 @@
 
     <b-modal v-model="showSpecificImage" centered hide-footer hide-header>
       <img :src="imageUrl" style="max-width: 100%" alt="image">
+      <b-button class="mt-3" @click="deleteImage()">Delete</b-button>
     </b-modal>
   </div>
   
@@ -47,7 +48,8 @@ export default {
     return {
       loadImageNumber: 0,
       showSpecificImage: false,
-      imageUrl: ''
+      imageUrl: '',
+      imageIdx: -1
     }
   },
   methods: {
@@ -62,9 +64,18 @@ export default {
     test(){
       this.loadImageNumber += 1;
     },
-    showSelectedImage(image) {
+    showSelectedImage(image, idx) {
       this.showSpecificImage = true;
       this.imageUrl = image;
+      this.imageIdx = idx;
+    },
+    deleteImage() {
+      this.$store.dispatch('deleteImage', this.imageIdx).then(() => {
+        this.showSpecificImage = false;
+        this.imageUrl = '';
+        this.imageIdx = -1;
+        this.loadImageNumber = 0;
+      });
     }
   }
 }
