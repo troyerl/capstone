@@ -54,7 +54,7 @@ export default {
     },
     getContents(m) {
       return {
-        content: m,
+        content: `<img style="width: 50px; height: 50px;" src="${m}">`,
         pixelOffset: {
           width: 0,
           height: -35

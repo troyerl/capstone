@@ -13,7 +13,7 @@
     </div>
     <div class="d-flex flex-wrap justify-content-center text-center">
       <div :key="index" v-for="(image, index) in images">
-        <img v-show="showImages" width="75" height="75" class="img mx-3 mt-2" :src="image.src" alt="" @load="test()">
+        <img v-show="showImages" width="75" height="75" class="img mx-3 mt-2" :src="image" alt="" @load="test()">
       </div>
       <b-button class="mt-3" block variant="primary" @click="loadMore()" v-if="(imageRoutes.length !== images.length) && showImages">Load More...</b-button>
     </div>

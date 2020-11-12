@@ -109,20 +109,19 @@ export default new Vuex.Store({
           method: 'GET', // *GET, POST, PUT, DELETE, etc.
           mode: 'cors', // no-cors, *cors, same-origin
         })
-        .then(async response => {
-          const data = await response.json();
-          // console.log(data.locations);
-          data.locations.forEach(image => {
-            dispatch('fetchImage', image);
+          .then(async response => {
+            const data = await response.json();
+            data.locations.forEach(image => {
+              dispatch('fetchImage', image);
+            });
+
+            resolve();
+          })
+          .catch(error => {
+            this.errorMessage = error;
+            console.error("There was an error!", error);
+            reject();
           });
-          
-          resolve();
-        })
-        .catch(error => {
-          this.errorMessage = error;
-          console.error("There was an error!", error);
-          reject();
-        });
       })
     },
     fetchImage({ commit }, payload) {
@@ -132,14 +131,11 @@ export default new Vuex.Store({
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
       })
-      .then((response) => response.blob())
-      .then((blob) => blob.text())
-      .then((text) => {
-        const pathSplit = topImage.split("/");
-        var image = new Image(50, 50);
-        image.src = `data:image/${pathSplit[2].split(".")[1]};base64,${text}`;
-        commit('addNewImage', { lat: lat * (180/Math.PI), long: long * (180/Math.PI), folderId: pathSplit[1], imageName: pathSplit[2], file: image });
-      });
+        .then(async (response) => {
+          const image = await response.json();
+          const pathSplit = topImage.split("/");
+          commit('addNewImage', { lat: lat * (180 / Math.PI), long: long * (180 / Math.PI), folderId: pathSplit[1], imageName: pathSplit[2], file: image.imageUrl });
+        });
     },
     uploadImage({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
@@ -155,13 +151,13 @@ export default new Vuex.Store({
         }).then(async (response) => {
           let data = await response.json();
           const pathSplit = data.split("/");
-  
+
           let reader = new FileReader();
-          reader.onloadend = function() {
+          reader.onloadend = function () {
             const image = new Image(50, 50);
             image.src = reader.result;
-  
-            commit('addNewImage', {lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
+
+            commit('addNewImage', { lat, long, folderId: pathSplit[1], imageName: pathSplit[2], file: image });
             resolve();
           }
           reader.readAsDataURL(file);
@@ -176,14 +172,10 @@ export default new Vuex.Store({
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
       })
-      .then((response) => response.blob())
-      .then((blob) => blob.text())
-      .then((text) => {
-        const pathSplit = imageRoute.split("/");
-        var image = new Image(50, 50);
-        image.src = `data:image/${pathSplit[2].split(".")[1]};base64,${text}`;
-        commit('addImageToImages', image);
-      });
+        .then(async (response) => {
+          const image = await response.json();
+          commit('addImageToImages', image.imageUrl);
+        });
     },
     getImageNames({ commit, state, dispatch }, payload) {
 
@@ -191,25 +183,25 @@ export default new Vuex.Store({
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
       })
-      .then(async response => {
-        const data = await response.json();
-        commit('setFolderImages', { imageRoutes: data });
-        
-        const firstNineImages = 9;
-        for(let i = 0; i < firstNineImages; i++) {
-          if (data[i]) {
-            commit('increaseImageAmountInImagesArray');
-            dispatch('getImagesFromFolder', data[i]);
-          }
-        }
-        commit('updateIndex', 9);
+        .then(async response => {
+          const data = await response.json();
+          commit('setFolderImages', { imageRoutes: data });
 
-      })
-      .catch(error => {
-        console.error("There was an error!", error);
-      })
+          const firstNineImages = 9;
+          for (let i = 0; i < firstNineImages; i++) {
+            if (data[i]) {
+              commit('increaseImageAmountInImagesArray');
+              dispatch('getImagesFromFolder', data[i]);
+            }
+          }
+          commit('updateIndex', 9);
+
+        })
+        .catch(error => {
+          console.error("There was an error!", error);
+        })
     },
-    loadMoreImages({ commit, dispatch, state}) {
+    loadMoreImages({ commit, dispatch, state }) {
       let currentIndex = state.currentImageIndex;
       for (let i = currentIndex; i < currentIndex + 9; i++) {
         if (state.imageRoutes[i]) {
