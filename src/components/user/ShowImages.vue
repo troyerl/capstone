@@ -70,11 +70,12 @@ export default {
       this.imageIdx = idx;
     },
     deleteImage() {
+      this.loadImageNumber = 0;
+
       this.$store.dispatch('deleteImage', this.imageIdx).then(() => {
         this.showSpecificImage = false;
         this.imageUrl = '';
         this.imageIdx = -1;
-        this.loadImageNumber = 0;
       });
     }
   }
